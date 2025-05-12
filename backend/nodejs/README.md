@@ -10,14 +10,8 @@ Nền tảng này bắt đầu được xây dựng, phát triển tại Califor
 
 ## Mục lục
 
-[1. Node.js hoạt động thế nào?](#1-nodejs-hoạt-động-thế-nào)
-
-[2. Quản lý package trong ứng dụng Node.js?](#2-quản-lý-package-trong-ứng-dụng-nodejs)
-
-[3. Node.js có tốt hơn các framework khác?](#3-nodejs-có-tốt-hơn-các-framework-khác)
-
-
-[5. Các tính năng thời gian của Node.js?](#5-các-tính-năng-thời-gian-của-nodejs)
+[1. Node.js hoạt động thế nào?](#1-nodejs-hoạt-động-thế-nào)   
+[2. Event Loop](#2-event-loop)
 
 ### 1. Node.js hoạt động thế nào?
 
@@ -45,19 +39,12 @@ Các bước trong mô hình xử lý đơn luồng với Event Loop:
         + Các luồng này nhận yêu cầu và xử lý chúng thực hiện hành động blocking IO, chuẩn bị phản hồi và gửi nó về Event Loop.
         + Event Loop lấy nó và gửi phản hồi đó về lại client.
     
-### 2. Quản lý package trong ứng dụng Node.js?
+### 2. Event Loop
 
-Khi thảo luận về Node js thì một điều chắc chắn không nên bỏ qua là xây dựng package quản lý sử dụng các công cụ NPM mà mặc định với mọi cài đặt Node js. Ý tưởng của mô-đun NPM là khá tương tự như Ruby-Gems: một tập hợp các hàm có sẵn có thể sử dụng được, thành phần tái sử dụng, tập hợp các cài đặt dễ dàng thông qua kho lưu trữ trực tuyến với các phiên bản quản lý khác nhau. Bên cạnh npm cũng có thể sử dụng yarn với bộ chức năng tương tự.
+- JavaScript là ngôn ngữ theo kiến trúc single-thread, non-blocking I/O (khác với những ngôn ngữ khác, *ví dụ* như Java có thể có nhiều thread, và khi 1 luồng I/O hoạt động thì hệ thống sẽ block lại cho tới khi nào nó xử lý xong mới tiếp nhận luồng tiếp theo), thì JS vẫn chấp nhận các luồng xử lý khác trong khi có 1 luồng vẫn đang chạy
+- Trong JS sẽ có 2 loại tác vụ là “đồng bộ” và “bất đồng bộ”, tất cả các hàm sau khi được gọi sẽ được đưa vào Call Stack (là 1 global execution context), ở đây:
+    - Nếu như hàm là đồng bộ thì sẽ được xử lý và trả ra kết quả ngay, và sau đó được đẩy ra khỏi Call Stack
+    - Nếu hàm là bất đồng bộ thì sẽ được đưa qua WebAPI để xử lý (WebAPI là 1 interface của browserI, cung cấp bộ giao diện tương tác bao gồm các tính năng như: fetch, setTimeout, v.v..). WebAPI sau khi xử lý xong hàm bất đồng bộ sẽ trả ra kết quả (dưới dạng 1 callback) và đưa vào Callback Queue
+- EVENT LOOP là 1 cơ chế của JavaScript Engine, nó có tác dụng là liên tục kiểm tra Call Stack và Callback Queue, nếu như thấy Call Stack đã trống thì nó sẽ lần lượt đẩy các hàm từ Callback Queue qua Call Stack (theo cơ chế của queue: first in first out), và từ Call Stack trả ra kết quả
 
-### 3. Node.js có tốt hơn các framework khác?
-
-- **Bất đồng bộ**: Đặc điểm đầu tiên của Nodejs là tính bất đồng bộ. Node.js không cần đợi API trả dữ liệu về, vậy nên mọi APIs nằm trong thư viện Node.js đều không được đồng bộ, hiểu đơn giản là chúng không hề blocking (khóa). Server có cơ chế riêng để gửi thông báo và nhận phản hồi về các hoạt động của Node.js và API đã gọi.
-- **Tốc độ nhanh**: Với phần core phía dưới lập trình gần như toàn bộ bằng ngôn ngữ C++, kết hợp với V8 Javascript Engine mà Google Chrome cung cấp, tốc độ vận hành, thực hiện code của thư viện Node.js diễn ra rất nhanh.
-- **Đơn giản/Hiệu quả**: Tiến trình vận hành của Node.js đơn giản song lại mang đến hiệu năng cao nhờ ứng dụng mô hình single thread và các sự kiện lặp. Một loạt cơ chế sự kiện cho phép server trả về phản hồi bằng cách không block, đồng thời tăng hiệu quả sử dụng. Các luồng đơn cung cấp dịch vụ cho nhiều request hơn hẳn Server truyền thống.
-- **Không đệm**: Nền tảng Node.js không có vùng đệm, tức không cung cấp khả năng lưu trữ dữ liệu buffer.
-- **Có giấy phép**: Đây là nền tảng đã được cấp giấy phép, phát hành dựa trên MIT License.
-
-
-### 5. Các tính năng thời gian của Node.js?
-
-Các hàm Set Timer:
+![](./assets/event-loop.png)
