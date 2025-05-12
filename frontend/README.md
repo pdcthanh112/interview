@@ -1,3 +1,9 @@
+## Mục lục
+
+[1. SSR - CSR - SSG - ISR](#1-ssr---csr---ssg---isr)  
+[2. Cookies - Session Storage - Local Storage](#2-cookies---session-storage---local-storage)  
+[3. Browser Rendering Pipeline](#3-browser-rendering-pipeline)
+
 ### 1. SSR - CSR - SSG - ISR
 
 <details>
