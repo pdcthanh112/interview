@@ -5,7 +5,7 @@
 [3. React rendering](#3-react-rendering)  
 [4. Diffing algorithm - Reconlication](#4-diffing-algorithm---reconlication)   
 [5. React Hydration](#5-react-hydration)    
-[6. Webpack va Babel](#6-webpack-va-babel)      
+     
 [7. Grafana](#3-grafana) 
 
 
@@ -14,6 +14,38 @@
 <details>
 <summary><b>useRef</b></summary>
 
+**Khái niệm ref:** Trong React, ref là một thuộc tính của một tag hay một element đại diện cho chính nó. ref cho phép chúng ta truy cập đến DOM node hoặc React element đã được mount.
+
+```html
+<input type="text" ref={textInput} />
+```
+ref nhận vào một biến hoặc một function. Nếu là function thì function này sẽ được chạy khi element được mount.
+
+```html
+<button ref={(element) => console.log(element)}>Send</button>
+```
+
+Dùng useRef khi cần thao tác với các thành phần của DOM, ví dụ như input, div, span, p,…
+
+`useRef.current` có thể gán trực tiếp được giá trị.
+
+*Ví dụ:*
+```tsx
+function TextInputWithFocusButton() {
+  const inputEl = useRef(null);
+  const onButtonClick = () => {
+    // `current` points to the mounted text input element
+    inputEl.current.focus();
+  };
+  return (
+    <>
+      <input ref={inputEl} type="text" />
+      <button onClick={onButtonClick}>Focus the input</button>
+    </>
+  );
+}
+```
+Trong ví dụ này khi người dùng click chuột vào button thì input có ref là inputEl sẽ nhận focus. Điều này **useState** không thể làm được.
 </details>
 
 <details>
@@ -253,28 +285,3 @@ Hydration là quá trình chuyển đổi HTML được render sẵn trên máy 
 Hydration không áp dụng cho các thư viện hoặc framework chỉ hoạt động trên phía client (client-only), mà chỉ hoạt động với các trang web SSR
 
 
-### 6. Webpack va Babel
-
-Webpack là một build tool được sử dụng để đóng gói (bundle) các module JavaScript, CSS, và các tài nguyên khác của ứng dụng web, loại bỏ những đoạn code không được thực thi, v.v…
-
-![](./assets/webpack-bundle.png)
-
-Webpack hoạt động bằng cách xây dựng một đồ thị phụ thuộc (dependency graph) của các tài nguyên trong dự án, sau đó sử dụng các module bundler để gộp chúng lại thành các bundle (gói) tối ưu. Nó cũng hỗ trợ nhiều tính năng mạnh mẽ như mã nguồn cấp định, hot module replacement (HMR), code splitting để tối ưu hóa hiệu suất và tải trang web nhanh hơn.
-
-- **Bundling:** Tạo ra một bundle duy nhất từ các module và tài nguyên khác để giảm thiểu số lượng request tới server và tăng tốc độ tải trang.
-- **Code Splitting:** Cho phép phân chia ứng dụng thành các bundle nhỏ hơn, giúp tối ưu hóa hiệu suất và tải ứng dụng theo phần.
-- **Loaders:** Webpack sử dụng các loaders để biên dịch (compile) các loại file không phải JavaScript như CSS, SASS, TypeScript, và chuyển đổi chúng thành module có thể hiểu được bởi browser.
-- **Plugins:** Các plugins cung cấp các tính năng bổ sung như tối ưu hóa, minification, và nhiều tính năng mở rộng khác cho quá trình build.
-
-**Vite** cũng là 1 build tool như Webpack nhưng có 1 số ưu điểm sau:
-
-- Instant start: thay vì phải "bundle" hết mọi thứ ngay từ đầu như Webpack, Vite dựa vào ES Modules gốc trên browser để load code. Điều này giúp khởi động dự án gần như ngay lập tức, không mất quá nhiều thời gian cho quá trình chuẩn bị
-- Hot Module Replacement (HMR): mỗi lần chỉnh sửa code, Vite chỉ "động" đến đúng phần đó và "chuyển" cho browser cập nhật. Nhờ vậy, những thay đổi xuất hiện ngay lập tức, giúp tiết kiệm thời gian
-- Zero configuration: bạn có thể cài đặt Vite và "chạy" mà không phải nhức đầu với file config dày cộp. Tất nhiên, Vite vẫn có file `vite.config.js` hoặc `vite.config.ts` để tùy chỉnh
-- Optimized production builds: ở production, Vite sử dụng Rollup để bundle, giúp cho sản phẩm cuối cùng sẽ được nén, tách file, và tối ưu hiệu suất ở mức cao.
-
-**Babel** là một công cụ được sử dụng để biên dịch (transpile) mã JavaScript mới nhất (ES6, ES7, ES8,...) thành phiên bản cũ hơn (thường là ES5) mà các trình duyệt web cũ hơn có thể hiểu được.
-
-- **Transpiling:** Chuyển đổi các đoạn mã JavaScript viết bằng các phiên bản mới nhất của ngôn ngữ (ES6, ES7,...) thành các phiên bản tương thích hơn (thường là ES5).
-- **Polyfill:** Cung cấp các polyfill để bổ sung các tính năng mới không được hỗ trợ bởi các trình duyệt cũ.
-- **Integration with Build Tools:** Babel thường được tích hợp với các công cụ build như Webpack để tự động biên dịch mã JavaScript trong quá trình build.

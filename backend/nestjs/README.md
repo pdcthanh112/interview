@@ -1,6 +1,3 @@
-
-
-
 ## Table of content
 
 [1. Hooks](#1-hooks)   

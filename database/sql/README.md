@@ -248,6 +248,22 @@ View là một bảng ảo dựa trên tập kết quả từ câu lệnh SQL. M
 
 ### 11. Window Function
 
+Windows functions trong SQL được sử dụng để thực hiện các phép tính các dòng có liên quan đến dòng hiện tại. Khác với Aggregate Functions tính toán tất cả các hàng, Windows Functions được sử dụng để tính toán theo từng hàng. Một Windows Function được định nghĩa khi có mệnh đề OVER() đi kèm sau lệnh gọi hàm.
+
 ### 12. CTE vs Subquery
 
+Common Table Expression (CTEs) là một tính năng quan trọng trong SQL, cho phép người dùng đặt tên và sử dụng một bảng tạm thời trong phạm vi của một truy vấn cụ thể. CTEs được sử dụng trong việc xử lý các câu truy vấn phức tạp, thường kết hợp với các câu lệnh SELECT, INSERT, UPDATE hoặc DELETE giúp tăng tính rõ ràng, dễ đọc hiểu và quản lý các đoạn mã SQL.
+
+```sql
+WITH cte_name (column1, column2, v.v...) AS (
+    -- Câu truy vấn CTE
+    SELECT ...
+    FROM ...
+    WHERE ...
+)
+-- câu truy vấn chính sử dụng CTE
+SELECT ...
+FROM cte_name
+WHERE ...
+```
 ### 13. Optimistic lock và Pessimistic lock

@@ -3,6 +3,7 @@
 [1. SSR - CSR - SSG - ISR](#1-ssr---csr---ssg---isr)  
 [2. Cookies - Session Storage - Local Storage](#2-cookies---session-storage---local-storage)  
 [3. Browser Rendering Pipeline](#3-browser-rendering-pipeline)
+[6. Webpack va Babel](#6-webpack-va-babel) 
 
 ### 1. SSR - CSR - SSG - ISR
 
@@ -86,6 +87,21 @@ ISR là một tính năng của Next.js, cho phép bạn tạo HTML tĩnh tại 
 
 
 ### 2. Cookies - Session Storage - Local Storage
+
+| |	Cookies |	Session Storage |	Local Storage |
+|--        |--        |--               |--             |
+|Định nghĩa|	File nhỏ lưu trữ dữ liệu dạng key-value, được server gửi đến trình duyệt và gửi lại trong các HTTP request.|	Dữ liệu key-value lưu trong trình duyệt, chỉ tồn tại trong phiên của một tab.	|Dữ liệu key-value lưu trong trình duyệt, tồn tại vĩnh viễn cho đến khi xóa.|
+|Dung lượng|	~4KB mỗi cookie, tổng ~80-200KB (20-50 cookies tùy trình duyệt).|	~5-10MB (tùy trình duyệt, ví dụ: Chrome/Firefox ~10MB).|	~5-10MB (thường chung giới hạn với Session Storage).|
+|Thời gian tồn tại|	Tùy thuộc Expires/Max-Age. Nếu không set, là session cookie (xóa khi đóng trình duyệt).|	Tồn tại trong phiên tab, xóa khi tab đóng.|	Tồn tại vĩnh viễn cho đến khi xóa bằng JavaScript hoặc xóa cache.
+|Truy cập|	- Client: `document.cookie` (trừ khi `HttpOnly`).</br> - Server: Header Cookie.</br> - Chia sẻ giữa tab/cửa sổ cùng domain.|	- Client: sessionStorage (JavaScript).</br> - Không gửi đến server.</br> - Chỉ trong tab hiện tại.|	- Client: localStorage (JavaScript).</br> - Không gửi đến server.</br> - Chia sẻ giữa tab/cửa sổ cùng domain.|
+|Bảo mật|	- `HttpOnly`: Ngăn JavaScript truy cập, chống XSS.</br> - Secure: Chỉ gửi qua HTTPS.- SameSite: Chống CSRF (Strict, Lax, None).</br> - Dễ bị XSS nếu không HttpOnly, CSRF nếu không SameSite.|	- Không gửi đến server, giảm CSRF.</br> - Dễ bị XSS vì JavaScript truy cập được.</br> - Không hỗ trợ `HttpOnly`/`Secure`.|	- Tương tự Session Storage: Giảm CSRF, dễ bị XSS.</br> - Không hỗ trợ `HttpOnly`/`Secure`.|
+|Hiệu suất|	- Gửi kèm trong mọi HTTP request, tăng kích thước request, có thể làm chậm mạng.</br> - Phù hợp dữ liệu nhỏ.|	- Lưu local, không gửi qua mạng, hiệu suất cao.</br> - Chiếm bộ nhớ trình duyệt.|	- Lưu local, không gửi qua mạng, hiệu suất cao.</br> - Chiếm bộ nhớ trình duyệt.|
+|Cách lưu trữ|	Lưu trong trình duyệt (file hoặc bộ nhớ), gửi qua header HTTP.|	Lưu trong bộ nhớ trình duyệt, không gửi qua mạng.|	Lưu trong bộ nhớ trình duyệt, không gửi qua mạng.|
+|Khả năng mã hóa|	Dữ liệu nhạy cảm (như token) cần mã hóa thủ công trước khi lưu.|	Có thể mã hóa thủ công trước khi lưu (như JSON với AES).|	Tương tự Session Storage, cần mã hóa thủ công.
+|Quản lý quyền|	Server kiểm soát qua Set-Cookie, client kiểm soát qua JavaScript (trừ HttpOnly).|	Chỉ client kiểm soát qua JavaScript.|	Chỉ client kiểm soát qua JavaScript.|
+|Khả năng xóa|	- Server: Set Expires quá khứ.</br> - Client: JavaScript hoặc xóa cache.|	- Client: JavaScript (removeItem/clear) hoặc đóng tab.|	- Client: JavaScript (removeItem/clear) hoặc xóa cache.
+|Ưu điểm|	- Server truy cập được.</br> - Linh hoạt thời gian tồn tại.</br> - Bảo mật cao với `HttpOnly`, `Secure`, `SameSite`.|	- Dung lượng lớn.</br> - Không gửi qua mạng, giảm CSRF.</br> - API đơn giản.|	- Dung lượng lớn.</br> - Tồn tại vĩnh viễn.</br>- API đơn giản.</br> - Chia sẻ giữa tab.
+|Nhược điểm|	- Dung lượng nhỏ.</br> - Gửi qua mạng, tăng tải request.</br>- API phức tạp (chuỗi p arse).|	- Xóa khi đóng tab.</br> - Dễ bị XSS.</br> - Không chia sẻ giữa tab.|	- Dễ bị XSS.</br> - Không gửi đến server.</br> - Chiếm bộ nhớ lâu dài.
 
 
 ### 3. Browser Rendering Pipeline
@@ -219,3 +235,30 @@ VD: gắn position: absolute cho 2 thẻ div, và sử dụng z-index để 1 th
 Nếu chạy tab Performance thì task Layerize sẽ tương ứng với bước này.
 
 ![DOM!](./assets/render-layer.png "DOM")
+
+
+### 6. Webpack và Babel
+
+**Webpack** là một build tool được sử dụng để đóng gói (bundle) các module JavaScript, CSS, và các tài nguyên khác của ứng dụng web, loại bỏ những đoạn code không được thực thi, v.v…
+
+![](./assets/webpack-bundle.png)
+
+Webpack hoạt động bằng cách xây dựng một đồ thị phụ thuộc (dependency graph) của các tài nguyên trong dự án, sau đó sử dụng các module bundler để gộp chúng lại thành các bundle (gói) tối ưu. Nó cũng hỗ trợ nhiều tính năng mạnh mẽ như mã nguồn cấp định, hot module replacement (HMR), code splitting để tối ưu hóa hiệu suất và tải trang web nhanh hơn.
+
+- **Bundling:** Tạo ra một bundle duy nhất từ các module và tài nguyên khác để giảm thiểu số lượng request tới server và tăng tốc độ tải trang.
+- **Code Splitting:** Cho phép phân chia ứng dụng thành các bundle nhỏ hơn, giúp tối ưu hóa hiệu suất và tải ứng dụng theo phần.
+- **Loaders:** Webpack sử dụng các loaders để biên dịch (compile) các loại file không phải JavaScript như CSS, SASS, TypeScript, và chuyển đổi chúng thành module có thể hiểu được bởi browser.
+- **Plugins:** Các plugins cung cấp các tính năng bổ sung như tối ưu hóa, minification, và nhiều tính năng mở rộng khác cho quá trình build.
+
+**Vite** cũng là 1 build tool như Webpack nhưng có 1 số ưu điểm sau:
+
+- Instant start: thay vì phải "bundle" hết mọi thứ ngay từ đầu như Webpack, Vite dựa vào ES Modules gốc trên browser để load code. Điều này giúp khởi động dự án gần như ngay lập tức, không mất quá nhiều thời gian cho quá trình chuẩn bị
+- Hot Module Replacement (HMR): mỗi lần chỉnh sửa code, Vite chỉ "động" đến đúng phần đó và "chuyển" cho browser cập nhật. Nhờ vậy, những thay đổi xuất hiện ngay lập tức, giúp tiết kiệm thời gian
+- Zero configuration: bạn có thể cài đặt Vite và "chạy" mà không phải nhức đầu với file config dày cộp. Tất nhiên, Vite vẫn có file `vite.config.js` hoặc `vite.config.ts` để tùy chỉnh
+- Optimized production builds: ở production, Vite sử dụng Rollup để bundle, giúp cho sản phẩm cuối cùng sẽ được nén, tách file, và tối ưu hiệu suất ở mức cao.
+
+**Babel** là một công cụ được sử dụng để biên dịch (transpile) mã JavaScript mới nhất (ES6, ES7, ES8,...) thành phiên bản cũ hơn (thường là ES5) mà các trình duyệt web cũ hơn có thể hiểu được.
+
+- **Transpiling:** Chuyển đổi các đoạn mã JavaScript viết bằng các phiên bản mới nhất của ngôn ngữ (ES6, ES7,...) thành các phiên bản tương thích hơn (thường là ES5).
+- **Polyfill:** Cung cấp các polyfill để bổ sung các tính năng mới không được hỗ trợ bởi các trình duyệt cũ.
+- **Integration with Build Tools:** Babel thường được tích hợp với các công cụ build như Webpack để tự động biên dịch mã JavaScript trong quá trình build.
